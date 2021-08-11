@@ -1,12 +1,8 @@
 var express = require('express');
 var apiRouter = express.Router();
 
-const devices = [
-    "rpi-123",
-    "rpi-456"
-];
-
-const sensors = [1901, 2601];
+const devices = require('../resources/device_list');
+const ex_config = require('../resources/config_example');
 
 /* GET home page. */
 apiRouter.get('/', function(req, res, next) {
@@ -23,14 +19,18 @@ apiRouter.get('/devices', (req,res) => {
 // List Sensors
 apiRouter.get('/devices/:deviceID/sensors', (req,res) => {
     deviceID = req.params.deviceID;
+    console.log(Date.now());
     res.status(200).send(body=sensors);
 });
 
 
 // Get Sensor Config
-apiRouter.get('/devices/:deviceID/sensors/:sensorID', (req,res) => (
-    res.status(200).send(`This is a config for of sensor ${req.params.sensorID}`)
-));
+apiRouter.get('/devices/:deviceID/sensors/:sensorID', (req,res) => {
+    // console.log(new Date.now());
+    console.log(req.params);
+    console.log(req.headers);
+    res.status(200).send(ex_config);
+});
 
 
 // Update Sensor Config
