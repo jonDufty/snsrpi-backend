@@ -1,6 +1,8 @@
-FROM python:3
-ENV PYTHONUNBUFFERED=1
-WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
-COPY . /code/
+FROM node:14-alpine
+WORKDIR /app
+COPY ./app/package*.json ./
+RUN npm install
+
+COPY /app .
+EXPOSE 8000
+CMD ["npm", "start"]
