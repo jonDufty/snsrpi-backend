@@ -11,15 +11,14 @@ const { IoTDataPlaneClient, ListNamedShadowsForThingCommand,
     GetThingShadowCommand, UpdateThingShadowCommand } = require("@aws-sdk/client-iot-data-plane");
 const { IoTClient, ListThingsInThingGroupCommand } = require("@aws-sdk/client-iot");
 
-    
 AWS.config.getCredentials(function (err) {
     if (err) console.log(err.stack);
     else {
         console.log(`Access key:${AWS.config.credentials.accessKeyId}`)
     }
 });
-    
-    
+
+
 const iotClient = new IoTClient({
     credentials: AWS.config.credentials,
     region: "ap-southeast-2",
@@ -29,6 +28,45 @@ const client = new IoTDataPlaneClient({
     credentials: AWS.config.credentials,
     region: "ap-southeast-2",
 });
+
+const getAllDevices = async(things) => {
+    console.log(things);
+    const devices = Promise.all(things.map( (thing) => getGlobalShadow(thing)));
+    return devices;
+}
+
+const getGlobalShadow = async (thing) => {
+    try {
+        var sensor_command = new GetThingShadowCommand({
+            thingName: thing,
+            shadowName: "global"
+        });
+        sens_response = await client.send(sensor_command);
+        payload = JSON.parse(new TextDecoder('utf-8').decode(sens_response.payload));
+        console.log(payload);
+        state = payload.state.reported;
+        sensor = {
+            [thing]: {
+                active: true,
+                connected: true,
+                ...state
+            }
+        }
+    } catch (e) {
+        console.log(e.message);
+        sensor = {
+            [thing]: {
+                active: false,
+                connected: false,
+                sensors: []
+            }
+        };
+
+    } finally {
+        console.log(sensor);
+        return sensor;
+    }
+}
 
 console.log("Client successfully initialised");
 
@@ -42,20 +80,24 @@ apiRouter.get('/', function (req, res, next) {
 
 // List Devices
 apiRouter.get('/devices', async (req, res) => {
-    
-    var command = new ListThingsInThingGroupCommand({
+
+    var dev_command = new ListThingsInThingGroupCommand({
         thingGroupName: thing_group,
     });
-    try {
-        const response = await iotClient.send(command);
-        var things = response.things;
-        console.log(things);
 
+    try {
+        const dev_response = await iotClient.send(dev_command);
+        var things = dev_response.things;
     } catch (e) {
-        console.log(e);
+        console.log(e.message);
         res.status(400).send({ "error": "Request failed" });
     }
-    res.status(200).send(body = things);
+    console.log(things)
+
+    const state = await getAllDevices(things)
+    console.log(state)
+
+    res.status(200).send(body = state);
 });
 
 
