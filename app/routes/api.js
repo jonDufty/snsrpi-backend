@@ -46,20 +46,19 @@ const getGlobalShadow = async (thing) => {
         console.log(payload);
         state = payload.state.reported;
         sensor = {
-            [thing]: {
+                device_id: thing,
                 active: true,
                 connected: true,
                 ...state
             }
-        }
+        
     } catch (e) {
         console.log(e.message);
         sensor = {
-            [thing]: {
+                device_id: thing,
                 active: false,
                 connected: false,
                 sensors: []
-            }
         };
 
     } finally {
@@ -125,7 +124,6 @@ apiRouter.get('/devices/:deviceID', async (req, res) => {
 
 // Get Sensor Config
 apiRouter.get('/devices/:deviceID/sensors/:sensorID', async (req, res) => {
-    // console.log(new Date.now());
     console.log(req.params);
     console.log(req.headers);
 
@@ -133,9 +131,7 @@ apiRouter.get('/devices/:deviceID/sensors/:sensorID', async (req, res) => {
         thingName: req.params.deviceID,
         shadowName: req.params.sensorID
     });
-    // var command = new ListNamedShadowsForThingCommand({
-    // thingName: "local_device"
-    // });
+
     try {
         const response = await client.send(command);
         payload = JSON.parse(new TextDecoder('utf-8').decode(response.payload));
@@ -173,7 +169,5 @@ apiRouter.post('/devices/:deviceID/sensors/:sensorID', async (req, res) => {
 })
 
 
-
-// 
 
 module.exports = apiRouter;
