@@ -60,7 +60,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: snsrpi-frontend
+        ECR_REPOSITORY: snsrpi-backend
         IMAGE_TAG: latest
       run: |
         # Build a docker container and
