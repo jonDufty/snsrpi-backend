@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-iot": "^3.32.0",
+    "@aws-sdk/client-iot-data-plane": "^3.33.0",
+    "aws-iot-device-sdk": "^2.2.11",
+    "aws-sdk": "^2.992.0",
+    "uuid": "^3.3.2"
+  }
+}

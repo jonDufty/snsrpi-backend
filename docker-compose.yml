@@ -1,9 +1,12 @@
 version: "3.7"
 
 services:
-    web:
-        image: backend:latest
-        command: python backend/manage.py runserver 0.0.0.0:8000
-        ports: 
-            - 8000:8000
+  backend:
+    image: backend:latest
+    ports: 
+      - 8000:8000
+    environment:
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+
         
